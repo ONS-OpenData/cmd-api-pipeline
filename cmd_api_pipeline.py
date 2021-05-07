@@ -1,43 +1,12 @@
 import requests, json, os, datetime
 
-
-""" For Develop """
-
-'''
-Get_Access_Token -> gets access token
-Get_Recipe_Api -> gets whole recipe api
-Check_Recipe_Exists -> checks a recipe exists within the recipe api
-Get_Recipe -> gets specific recipe
-Get_Recipe_Info -> gets useful specfic recipe info
-Get_Recipe_Info_From_Recipe_Id -> gets useful specfic recipe info, using recipe_id
-Update_Recipe -> updates top level of specific recipe [alias, format, id]
-Update_Recipe_Editions -> updates editions of specific recipe
-Update_Recipe_Codelists -> updates single code list for specific recipe
-Post_New_Recipe_In_Api -> creates new recipe in recipe api
-Check_Recipe_Dict -> checks recipe is correct format for uploading
-Create_Recipe_Dict -> creates a basic recipe_dict to be populated
-Update_Details_Of_Recipe_Dict -> auto populates the recipe_dict
-Update_Codelist_Dict_For_Recipe -> updates code lists of the recipe_dict
-Get_Dataset_Instances_Api -> gets dataset/instances api
-Get_Latest_Dataset_Instances -> gets the latest upload id
-Get_Dataset_Instance_Info -> gets specific dataset instance info
-Get_Dataset_Jobs_Api -> gets dataset/jobs api
-Get_Latest_Job_Info -> gets latest job id and recipe id and instance id
-Post_New_Job -> creates new job in /jobs
-Add_File_To_Existing_Job -> assigns data file to a job
-Update_State_Of_Job -> updates state of a job from created to submitted
-Get_Job_Info -> gets job info
-Upload_Data_To_Florence -> uploads data
-Post_V4_To_S3() -> uploads v4 into s3 bucket
-'''
-
-def Get_Access_Token(credentials): # create inputs for email and password
+def Get_Access_Token(credentials): 
     ### getting access_token ###
     '''
     credentials should be a path to file containing florence login email and password
     '''
     
-    zebedee_url = 'https://publishing.develop.onsdigital.co.uk/zebedee/login'
+    zebedee_url = 'https://publishing.ons.gov.uk/zebedee/login'
     
     with open(credentials, 'r') as json_file:
         credentials_json = json.load(json_file)
@@ -46,7 +15,7 @@ def Get_Access_Token(credentials): # create inputs for email and password
     password = credentials_json['password']
     login = {"email":email, "password":password}
     
-    r = requests.post(zebedee_url, json=login)
+    r = requests.post(zebedee_url, json=login, verify=False)
     if r.status_code == 200:
         access_token = r.text.strip('"')
         return access_token
@@ -57,10 +26,10 @@ def Get_Access_Token(credentials): # create inputs for email and password
 def Get_Recipe_Api(access_token):
     ''' returns whole recipe api '''
     
-    recipe_api_url = 'https://publishing.develop.onsdigital.co.uk/recipes'
+    recipe_api_url = 'https://publishing.ons.gov.uk/recipes'
     headers = {'X-Florence-Token':access_token}
     
-    r = requests.get(recipe_api_url + '?limit=1000', headers=headers)
+    r = requests.get(recipe_api_url + '?limit=1000', headers=headers, verify=False)
     
     if r.status_code == 200:
         recipe_dict = r.json()
@@ -117,12 +86,12 @@ def Get_Recipe_Info_From_Recipe_Id(access_token, recipe_id):
     Uses recipe_id to get recipe information
     '''
     
-    recipe_api_url = 'https://publishing.develop.onsdigital.co.uk/recipes'
+    recipe_api_url = 'https://publishing.ons.gov.uk/recipes'
     single_recipe_url = recipe_api_url + '/' + recipe_id 
     
     headers = {'X-Florence-Token':access_token}
     
-    r = requests.get(single_recipe_url, headers=headers)
+    r = requests.get(single_recipe_url, headers=headers, verify=False)
     if r.status_code == 200:
         single_recipe_dict = r.json()
         return single_recipe_dict
@@ -144,12 +113,12 @@ def Update_Recipe(access_token, dataset_id, updated_recipe_dict):
     recipe_dict = Get_Recipe_Info(access_token, dataset_id)
     recipe_id = recipe_dict['recipe_id']
     
-    recipe_api_url = 'https://publishing.develop.onsdigital.co.uk/recipes'
+    recipe_api_url = 'https://publishing.ons.gov.uk/recipes'
     single_recipe_url = recipe_api_url + '/' + recipe_id
     
     headers = {'X-Florence-Token':access_token}
     
-    r = requests.put(single_recipe_url, headers=headers, json=updated_recipe_dict)
+    r = requests.put(single_recipe_url, headers=headers, json=updated_recipe_dict, verify=False)
     
     if r.status_code == 200:
         print('Recipe updated successfully!')
@@ -172,7 +141,7 @@ def Update_Recipe_Editions(access_token, dataset_id, list_of_editions):
     recipe_dict = Get_Recipe_Info(access_token, dataset_id)
     recipe_id = recipe_dict['recipe_id']
     
-    recipe_api_url = 'https://publishing.develop.onsdigital.co.uk/recipes'
+    recipe_api_url = 'https://publishing.ons.gov.uk/recipes'
     single_recipe_url = recipe_api_url + '/' + recipe_id + '/instances/' + dataset_id
     
     headers = {'X-Florence-Token':access_token}
@@ -180,7 +149,7 @@ def Update_Recipe_Editions(access_token, dataset_id, list_of_editions):
     new_editions_dict = {}
     new_editions_dict['editions'] = list_of_editions
     
-    r = requests.put(single_recipe_url, headers=headers, json=new_editions_dict)
+    r = requests.put(single_recipe_url, headers=headers, json=new_editions_dict, verify=False)
     
     if r.status_code == 200:
         print('Editions updated successfully!')
@@ -204,12 +173,12 @@ def Update_Recipe_Codelists(access_token, dataset_id, codelist_changes_dict, cod
     recipe_dict = Get_Recipe_Info(access_token, dataset_id)
     recipe_id = recipe_dict['recipe_id']
     
-    recipe_api_url = 'https://publishing.develop.onsdigital.co.uk/recipes'
+    recipe_api_url = 'https://publishing.ons.gov.uk/recipes'
     single_recipe_url = recipe_api_url + '/' + recipe_id + '/instances/' + dataset_id + '/code-lists/' + codelist_id
     
     headers = {'X-Florence-Token':access_token}
     
-    r = requests.put(single_recipe_url, headers=headers, json=codelist_changes_dict)
+    r = requests.put(single_recipe_url, headers=headers, json=codelist_changes_dict, verify=False)
     
     if r.status_code == 200:
         print('Codelist updated successfully!')
@@ -224,11 +193,11 @@ def Post_New_Recipe_In_Api(access_token, recipe_dict):
     '''
     Check_Recipe_Dict(recipe_dict)
     
-    recipe_api_url = 'https://publishing.develop.onsdigital.co.uk/recipes'
+    recipe_api_url = 'https://publishing.ons.gov.uk/recipes'
     
     headers = {'X-Florence-Token':access_token}
     
-    r = requests.post(recipe_api_url, headers=headers, json=recipe_dict)
+    r = requests.post(recipe_api_url, headers=headers, json=recipe_dict, verify=False)
     
     dataset_id = recipe_dict['output_instances'][0]['dataset_id']
     
@@ -344,12 +313,10 @@ def Get_Dataset_Instances_Api(access_token):
     ''' 
     Returns /dataset/instances API 
     '''
-    dataset_instances_api_url = 'https://publishing.develop.onsdigital.co.uk/dataset/instances'
+    dataset_instances_api_url = 'https://publishing.ons.gov.uk/dataset/instances'
     headers = {'X-Florence-Token':access_token}
     
-    r = requests.get(dataset_instances_api_url, headers=headers)
-    
-    r = requests.get(dataset_instances_api_url + '?limit=1000', headers=headers)
+    r = requests.get(dataset_instances_api_url + '?limit=1000', headers=headers, verify=False)
     if r.status_code == 200:
         whole_dict = r.json()
         total_count = whole_dict['total_count']
@@ -361,7 +328,7 @@ def Get_Dataset_Instances_Api(access_token):
             dataset_instances_dict = []
             for i in range(number_of_iterations):
                 new_url = dataset_instances_api_url + '?limit=1000&offset={}'.format(offset)
-                new_dict = requests.get(new_url, headers=headers).json()
+                new_dict = requests.get(new_url, headers=headers, verify=False).json()
                 for item in new_dict['items']:
                     dataset_instances_dict.append(item)
                 offset += 1000
@@ -385,10 +352,10 @@ def Get_Dataset_Instance_Info(access_token, instance_id):
     '''
     Return specific dataset instance info
     '''
-    dataset_instances_url = 'https://publishing.develop.onsdigital.co.uk/dataset/instances/' + instance_id
+    dataset_instances_url = 'https://publishing.ons.gov.uk/dataset/instances/' + instance_id
     headers = {'X-Florence-Token':access_token}
     
-    r = requests.get(dataset_instances_url, headers=headers)
+    r = requests.get(dataset_instances_url, headers=headers, verify=False)
     if r.status_code == 200:
         dataset_instances_dict = r.json()
         return dataset_instances_dict
@@ -401,12 +368,10 @@ def Get_Dataset_Jobs_Api(access_token):
     Returns dataset/jobs API
     '''
 
-    dataset_jobs_api_url = 'https://publishing.develop.onsdigital.co.uk/dataset/jobs'
+    dataset_jobs_api_url = 'https://publishing.ons.gov.uk/dataset/jobs'
     headers = {'X-Florence-Token':access_token}
-
-    r = requests.get(dataset_jobs_api_url + '?limit=1000', headers=headers)
     
-    r = requests.get(dataset_jobs_api_url + '?limit=1000', headers=headers)
+    r = requests.get(dataset_jobs_api_url + '?limit=1000', headers=headers, verify=False)
     if r.status_code == 200:
         whole_dict = r.json()
         total_count = whole_dict['total_count']
@@ -418,7 +383,7 @@ def Get_Dataset_Jobs_Api(access_token):
             dataset_jobs_dict = []
             for i in range(number_of_iterations):
                 new_url = dataset_jobs_api_url + '?limit=1000&offset={}'.format(offset)
-                new_dict = requests.get(new_url, headers=headers).json()
+                new_dict = requests.get(new_url, headers=headers, verify=False).json()
                 for item in new_dict['items']:
                     dataset_jobs_dict.append(item)
                 offset += 1000
@@ -447,7 +412,7 @@ def Post_New_Job(access_token, dataset_id, s3_url):
     '''
     dataset_dict = Get_Recipe_Info(access_token, dataset_id)
     
-    dataset_jobs_api_url = 'https://publishing.develop.onsdigital.co.uk/dataset/jobs'
+    dataset_jobs_api_url = 'https://publishing.ons.gov.uk/dataset/jobs'
     headers = {'X-Florence-Token':access_token}
     
     new_job_json = {
@@ -462,7 +427,7 @@ def Post_New_Job(access_token, dataset_id, s3_url):
         ]
     }
         
-    r = requests.post(dataset_jobs_api_url, headers=headers, json=new_job_json)
+    r = requests.post(dataset_jobs_api_url, headers=headers, json=new_job_json, verify=False)
     if r.status_code == 201:
         print('Job created succefully')
     else:
@@ -488,7 +453,7 @@ def Add_File_To_Existing_Job(access_token, dataset_id, job_id, s3_url):
 
     dataset_dict = Get_Recipe_Info(access_token, dataset_id)
     
-    attaching_file_to_job_url = 'https://publishing.develop.onsdigital.co.uk/dataset/jobs/' + job_id + '/files'
+    attaching_file_to_job_url = 'https://publishing.ons.gov.uk/dataset/jobs/' + job_id + '/files'
     headers = {'X-Florence-Token':access_token}
     
     added_file_json = {
@@ -496,7 +461,7 @@ def Add_File_To_Existing_Job(access_token, dataset_id, job_id, s3_url):
             'url':s3_url
             }
 
-    r = requests.put(attaching_file_to_job_url, headers=headers, json=added_file_json)
+    r = requests.put(attaching_file_to_job_url, headers=headers, json=added_file_json, verify=False)
     if r.status_code == 200:
         print('File added successfully')
     else:
@@ -509,7 +474,7 @@ def Update_State_Of_Job(access_token, job_id):
     once submitted import process will begin
     '''
 
-    updating_state_of_job_url = 'https://publishing.develop.onsdigital.co.uk/dataset/jobs/' + job_id
+    updating_state_of_job_url = 'https://publishing.ons.gov.uk/dataset/jobs/' + job_id
     headers = {'X-Florence-Token':access_token}
 
     updating_state_of_job_json = {}
@@ -519,7 +484,7 @@ def Update_State_Of_Job(access_token, job_id):
     job_id_dict = Get_Job_Info(access_token, job_id)
     
     if len(job_id_dict['files']) != 0:
-        r = requests.put(updating_state_of_job_url, headers=headers, json=updating_state_of_job_json)
+        r = requests.put(updating_state_of_job_url, headers=headers, json=updating_state_of_job_json, verify=False)
         if r.status_code == 200:
             print('State updated successfully')
         else:
@@ -532,10 +497,10 @@ def Get_Job_Info(access_token, job_id):
     '''
     Return job info
     '''
-    dataset_jobs_id_url = 'https://publishing.develop.onsdigital.co.uk/dataset/jobs/' + job_id
+    dataset_jobs_id_url = 'https://publishing.ons.gov.uk/dataset/jobs/' + job_id
     headers = {'X-Florence-Token':access_token}
     
-    r = requests.get(dataset_jobs_id_url, headers=headers)
+    r = requests.get(dataset_jobs_id_url, headers=headers, verify=False)
     if r.status_code == 200:
         job_info_dict = r.json()
         return job_info_dict
@@ -572,7 +537,7 @@ def Post_V4_To_S3(access_token, v4):
     timestamp = datetime.datetime.strftime(timestamp, '%d%m%y%H%M%S')
     file_name = v4.split("/")[-1]
     
-    upload_url = 'https://publishing.develop.onsdigital.co.uk/upload'
+    upload_url = 'https://publishing.ons.gov.uk/upload'
     headers = {'X-Florence-Token':access_token}
     
     # chunk up the data
@@ -601,13 +566,13 @@ def Post_V4_To_S3(access_token, v4):
             }
             
             # making the POST request
-            r = requests.post(upload_url, headers=headers, params=params, files=files)
+            r = requests.post(upload_url, headers=headers, params=params, files=files, verify=False)
             if r.status_code != 200:  
                 raise Exception('{} returned error {}'.format(upload_url, r.status_code))
                 
             chunk_number += 1 # moving onto next chunk number
         
-    s3_url = 'https://s3-eu-west-1.amazonaws.com/ons-dp-develop-publishing-uploaded-datasets/{}'.format(params['resumableIdentifier'])
+    s3_url = 'https://s3-eu-west-1.amazonaws.com/ons-dp-production-publishing-uploaded-datasets/{}'.format(params['resumableIdentifier'])
     
     # delete temp files
     Delete_Temp_Chunks(temp_files)
