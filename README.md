@@ -6,6 +6,11 @@ Florence access is required. Update the florence-info.json file with your login 
 
 Use either the functions Upload_To_Cmd or Multi_Upload_To_Cmd - Multi_Upload_To_Cmd can also upload a single dataset and is the preferred function.
 
+#### How to use
+- Updated florence-details.json with florence username and password
+- Create a dict with relevant info for the upload - https://github.com/ONS-OpenData/cmd-api-pipeline/blob/master/cmd_api_pipeline.py#L1176-L1183
+- Pass the path to florence-details.json and the dict to Multi_Upload_To_Cmd()
+
 #### TODO
 - There is some redundant functions that will be removed
 - Some of the functions are used to do other 'stuff' that isn't uploading data into CMD, these will be separated in the future
