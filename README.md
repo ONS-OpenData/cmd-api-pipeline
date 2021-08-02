@@ -1,11 +1,16 @@
 # cmd-api-pipeline
 
-Functions used to interact with the CMD API
+Used to upload a v4 file(s) into CMD.
 
-Florence access is required to use these functions
+Florence access is required. Update the florence-info.json file with your login details.
 
-Update the florence-info.json file with your login details
+Use either the functions Upload_To_Cmd or Multi_Upload_To_Cmd - Multi_Upload_To_Cmd can also upload a single dataset and is the preferred function.
 
-Upload_Data_To_Florence() function will upload a v4 straight into CMD
+TODO
+- There is some redundant functions that will be removed
+- Some of the functions are used to do other 'stuff' that isn't uploading data into CMD, these will be separated in the future
+- The functions will be turned into a python class
+- Will be updated to use a service token instead of user credentials
+- More robust checks will be added in
+- Currently takes the metadata file in the format that is outputted from CMD, this is likely to change
 
-Pass in the file path to florence-info.json, the dataset_id and the file path to the v4
