@@ -6,7 +6,7 @@ Florence access is required. Update the florence-info.json file with your login 
 
 Use either the functions Upload_To_Cmd or Multi_Upload_To_Cmd - Multi_Upload_To_Cmd can also upload a single dataset and is the preferred function.
 
-##### TODO
+#### TODO
 - There is some redundant functions that will be removed
 - Some of the functions are used to do other 'stuff' that isn't uploading data into CMD, these will be separated in the future
 - The functions will be turned into a python class
