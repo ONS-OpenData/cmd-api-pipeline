@@ -576,7 +576,7 @@ def Post_V4_To_S3(access_token, v4):
                 
             chunk_number += 1 # moving onto next chunk number
         
-    s3_url = 'https://s3-eu-west-1.amazonaws.com/ons-dp-develop-publishing-uploaded-datasets/{}'.format(params['resumableIdentifier'])
+    s3_url = 'https://s3-eu-west-1.amazonaws.com/ons-dp-production-publishing-uploaded-datasets/{}'.format(params['resumableIdentifier'])
     
     # delete temp files
     Delete_Temp_Chunks(temp_files)
