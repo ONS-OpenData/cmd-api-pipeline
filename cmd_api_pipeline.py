@@ -1228,6 +1228,7 @@ def Multi_Upload_To_Cmd(credentials, upload_dict):
         
         # Monitioring state of upload #
         state_of_upload = '' # updated in while loop
+        time.sleep(60) # gives cmd a chance to create instance
         
         # start while loop
         while state_of_upload != 'completed':
