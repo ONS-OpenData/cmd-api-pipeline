@@ -9,7 +9,7 @@ Use either the functions Upload_To_Cmd or Multi_Upload_To_Cmd - Multi_Upload_To_
 #### How to use
 - Updated florence-details.json with florence username and password
 - Create a dict with relevant info for the upload - https://github.com/ONS-OpenData/cmd-api-pipeline/blob/master/cmd_api_pipeline.py#L1176-L1183
-- Pass the path to florence-details.json and the dict to Multi_Upload_To_Cmd()
+- Pass the path to florence-details.json and the dict to Multi_Upload_To_Cmd() - https://github.com/ONS-OpenData/cmd-api-pipeline/blob/master/cmd_api_pipeline.py#L1171
 
 #### TODO
 - There is some redundant functions that will be removed
