@@ -745,7 +745,7 @@ def Update_Usage_Notes(access_token, dataset_id, version_number, metadata_dict, 
     
     does not need note and title
     '''        
-    if 'usage_notes' not in metadata_dict.keys():
+    if len(metadata_dict['usage_notes']) == 0:
         return 'No usage notes to add'
     
     usage_notes = metadata_dict['usage_notes']
