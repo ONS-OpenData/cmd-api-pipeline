@@ -745,7 +745,7 @@ def Update_Usage_Notes(access_token, dataset_id, version_number, metadata_dict, 
     
     does not need note and title
     '''        
-    if 'usage_notes' not in metadata_dict.keys():
+    if len(metadata_dict['usage_notes']) == 0:
         return 'No usage notes to add'
     
     usage_notes = metadata_dict['usage_notes']
@@ -1228,6 +1228,7 @@ def Multi_Upload_To_Cmd(credentials, upload_dict):
         
         # Monitioring state of upload #
         state_of_upload = '' # updated in while loop
+        time.sleep(60) # gives cmd a chance to create instance
         
         # start while loop
         while state_of_upload != 'completed':
